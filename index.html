@@ -1,0 +1,1295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sprouts.ai Platform Training</title>
+  <style>
+    :root {
+      --bg: #f3f7fb;
+      --surface: rgba(255, 255, 255, 0.88);
+      --surface-strong: #ffffff;
+      --text: #0f172a;
+      --muted: #475569;
+      --line: rgba(15, 23, 42, 0.1);
+      --primary: #0f766e;
+      --primary-soft: rgba(15, 118, 110, 0.12);
+      --accent: #2563eb;
+      --accent-soft: rgba(37, 99, 235, 0.12);
+      --shadow: 0 24px 60px rgba(15, 23, 42, 0.12);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      height: 100vh;
+      font-family: "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at top left, rgba(37, 99, 235, 0.12), transparent 28%),
+        radial-gradient(circle at top right, rgba(15, 118, 110, 0.15), transparent 32%),
+        linear-gradient(180deg, #eef5fb 0%, #f8fbfd 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 12px;
+      overflow: hidden;
+    }
+
+    .deck {
+      width: min(1280px, 100%);
+      height: 100%;
+    }
+
+    .slide {
+      display: none;
+      height: calc(100vh - 24px);
+      max-height: calc(100vh - 24px);
+      background: var(--surface);
+      border: 1px solid rgba(255, 255, 255, 0.7);
+      border-radius: 32px;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(18px);
+      overflow: hidden;
+      position: relative;
+    }
+
+    .slide.active {
+      display: grid;
+      grid-template-rows: auto 1fr auto;
+    }
+
+    .slide::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background:
+        linear-gradient(135deg, rgba(37, 99, 235, 0.04), transparent 40%),
+        linear-gradient(310deg, rgba(15, 118, 110, 0.06), transparent 45%);
+      pointer-events: none;
+    }
+
+    .topbar,
+    .footer {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 18px 24px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+    }
+
+    .brand img {
+      width: 42px;
+      height: 42px;
+      border-radius: 12px;
+      background: #fff;
+      padding: 6px;
+      box-shadow: 0 10px 20px rgba(15, 23, 42, 0.08);
+    }
+
+    .pill-row {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+
+    .pill,
+    .meta {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 14px;
+      border-radius: 999px;
+      font-size: 0.92rem;
+      color: var(--muted);
+      background: rgba(255, 255, 255, 0.72);
+      border: 1px solid var(--line);
+    }
+
+    .meta strong {
+      color: var(--text);
+    }
+
+    .content {
+      position: relative;
+      z-index: 1;
+      display: grid;
+      grid-template-columns: 1.2fr 0.9fr;
+      gap: 28px;
+      padding: 0 24px 12px;
+      min-height: 0;
+      overflow: hidden;
+    }
+
+    .title-slide .content {
+      grid-template-columns: 1.2fr 0.8fr;
+      align-items: stretch;
+    }
+
+    .main-card,
+    .side-card {
+      background: rgba(255, 255, 255, 0.84);
+      border: 1px solid rgba(15, 23, 42, 0.08);
+      border-radius: 28px;
+      padding: 24px;
+      min-height: 0;
+    }
+
+    .eyebrow {
+      text-transform: uppercase;
+      letter-spacing: 0.14em;
+      font-size: 0.76rem;
+      font-weight: 700;
+      color: var(--primary);
+      margin-bottom: 16px;
+    }
+
+    h1,
+    h2 {
+      margin: 0 0 16px;
+      line-height: 1.02;
+      letter-spacing: -0.03em;
+    }
+
+    h1 {
+      font-size: clamp(2.8rem, 5vw, 4.9rem);
+      max-width: 10ch;
+    }
+
+    h2 {
+      font-size: clamp(2rem, 3vw, 3rem);
+    }
+
+    .subtitle {
+      font-size: 1.02rem;
+      color: var(--muted);
+      max-width: 56ch;
+      margin-bottom: 18px;
+      line-height: 1.5;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+      margin-top: 14px;
+    }
+
+    .stat,
+    .detail {
+      border: 1px solid var(--line);
+      border-radius: 22px;
+      padding: 16px;
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.92), rgba(243, 247, 251, 0.9));
+    }
+
+    .label {
+      font-size: 0.78rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--muted);
+      margin-bottom: 10px;
+    }
+
+    .value {
+      font-size: 1.1rem;
+      font-weight: 700;
+      line-height: 1.4;
+    }
+
+    ul {
+      margin: 0;
+      padding-left: 20px;
+      color: var(--muted);
+      line-height: 1.45;
+      font-size: 0.96rem;
+    }
+
+    li + li {
+      margin-top: 8px;
+    }
+
+    .module-list,
+    .submodules {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 12px;
+      margin-bottom: 14px;
+    }
+
+    .tag {
+      padding: 8px 11px;
+      border-radius: 16px;
+      background: var(--primary-soft);
+      color: var(--primary);
+      font-size: 0.86rem;
+      font-weight: 600;
+    }
+
+    .tag.alt {
+      background: var(--accent-soft);
+      color: var(--accent);
+    }
+
+    .visual-panel {
+      min-height: 0;
+      display: grid;
+      gap: 12px;
+      align-content: start;
+    }
+
+    .title-slide .visual-panel {
+      height: 100%;
+    }
+
+    .closing-slide .content {
+      grid-template-columns: 1fr;
+      align-items: center;
+      justify-items: center;
+    }
+
+    .closing-slide .main-card {
+      max-width: 760px;
+      width: 100%;
+      text-align: center;
+      padding: 48px 40px;
+    }
+
+    .closing-slide .subtitle {
+      max-width: 42ch;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .closing-logo {
+      width: 72px;
+      height: 72px;
+      border-radius: 20px;
+      background: #fff;
+      padding: 12px;
+      box-shadow: 0 14px 30px rgba(15, 23, 42, 0.08);
+      margin: 0 auto 22px;
+      display: block;
+    }
+
+    .closing-meta {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 14px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: rgba(37, 99, 235, 0.08);
+      color: var(--accent);
+      font-weight: 700;
+      margin-top: 8px;
+    }
+
+    .icon-row {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .icon-card {
+      border: 1px solid var(--line);
+      border-radius: 22px;
+      padding: 16px;
+      background: var(--surface-strong);
+    }
+
+    .icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 14px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, rgba(37, 99, 235, 0.16), rgba(15, 118, 110, 0.14));
+      color: var(--text);
+      margin-bottom: 10px;
+    }
+
+    .icon svg {
+      width: 22px;
+      height: 22px;
+    }
+
+    .icon-card h3,
+    .side-card h3 {
+      margin: 0 0 8px;
+      font-size: 0.96rem;
+    }
+
+    .icon-card p,
+    .side-card p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.45;
+      font-size: 0.9rem;
+    }
+
+    .footer {
+      padding-top: 8px;
+    }
+
+    .progress {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .progress-track {
+      width: 180px;
+      height: 8px;
+      border-radius: 999px;
+      background: rgba(15, 23, 42, 0.08);
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--accent), var(--primary));
+      width: 0;
+      transition: width 0.25s ease;
+    }
+
+    .controls {
+      display: flex;
+      gap: 12px;
+    }
+
+    button {
+      border: 0;
+      border-radius: 16px;
+      padding: 12px 16px;
+      font: inherit;
+      font-weight: 700;
+      cursor: pointer;
+      transition: transform 0.18s ease, box-shadow 0.18s ease, opacity 0.18s ease;
+    }
+
+    button:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 12px 24px rgba(15, 23, 42, 0.12);
+    }
+
+    button:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
+
+    .btn-secondary {
+      background: rgba(255, 255, 255, 0.9);
+      color: var(--text);
+      border: 1px solid var(--line);
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--accent), var(--primary));
+      color: #fff;
+    }
+
+    .hero-orb {
+      min-height: 100%;
+      border-radius: 30px;
+      background:
+        radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.94), transparent 18%),
+        radial-gradient(circle at 70% 35%, rgba(37, 99, 235, 0.42), transparent 24%),
+        radial-gradient(circle at 40% 72%, rgba(15, 118, 110, 0.48), transparent 28%),
+        linear-gradient(145deg, #dbeafe, #ecfeff 52%, #dcfce7);
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      padding: 20px;
+    }
+
+    .hero-orb::after {
+      content: "";
+      position: absolute;
+      inset: 12% 10%;
+      border-radius: 26px;
+      border: 1px solid rgba(255, 255, 255, 0.6);
+    }
+
+    .hero-copy {
+      position: relative;
+      z-index: 1;
+      background: rgba(255, 255, 255, 0.84);
+      border: 1px solid rgba(255, 255, 255, 0.9);
+      border-radius: 24px;
+      padding: 16px;
+      max-width: 420px;
+      width: 100%;
+    }
+
+    .summary-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .hero-copy strong {
+      display: block;
+      margin-bottom: 8px;
+      font-size: 1.02rem;
+    }
+
+    .hero-copy span {
+      color: var(--muted);
+      line-height: 1.5;
+      font-size: 0.94rem;
+    }
+
+    .two-column-list {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 16px;
+    }
+
+    .flow-stack {
+      display: grid;
+      gap: 12px;
+      margin-top: 16px;
+    }
+
+    .flow-section {
+      border: 1px solid rgba(15, 23, 42, 0.08);
+      border-radius: 18px;
+      background: rgba(255, 255, 255, 0.78);
+      padding: 12px 14px;
+    }
+
+    .flow-section strong {
+      display: block;
+      margin-bottom: 8px;
+      font-size: 0.92rem;
+      letter-spacing: 0.02em;
+    }
+
+    .flow-items {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      color: var(--muted);
+      line-height: 1.35;
+      font-size: 0.84rem;
+    }
+
+    .flow-chip {
+      display: inline-flex;
+      align-items: center;
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: rgba(37, 99, 235, 0.08);
+      color: #1e3a8a;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+
+    .flow-chip.alt {
+      background: rgba(15, 118, 110, 0.1);
+      color: #115e59;
+    }
+
+    .agenda-block {
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      padding: 16px;
+      background: rgba(255, 255, 255, 0.92);
+    }
+
+    .agenda-block strong {
+      display: block;
+      margin-bottom: 10px;
+      font-size: 1rem;
+    }
+
+    .small {
+      font-size: 0.95rem;
+      color: var(--muted);
+    }
+
+    @media (max-width: 1024px) {
+      body {
+        height: auto;
+        min-height: 100vh;
+        padding: 10px;
+        overflow: auto;
+      }
+
+      .slide {
+        height: auto;
+        max-height: none;
+      }
+
+      .content,
+      .title-slide .content {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 720px) {
+      .topbar,
+      .footer,
+      .content {
+        padding-left: 20px;
+        padding-right: 20px;
+      }
+
+      .grid,
+      .icon-row,
+      .two-column-list,
+      .summary-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .controls {
+        width: 100%;
+      }
+
+      button {
+        flex: 1;
+      }
+
+      .footer {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 14px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="deck">
+    <section class="slide active title-slide" data-slide="1">
+      <div class="topbar">
+        <div class="brand">
+          <img src="https://sprouts.ai/_next/static/media/logo-icon.51debca5.png" alt="Sprouts.ai logo">
+          <span>Sprouts.ai Training</span>
+        </div>
+        <div class="pill-row">
+        </div>
+      </div>
+      <div class="content">
+        <div class="main-card">
+          <div class="eyebrow">Onboarding Presentation</div>
+          <h1>Sprouts.ai Platform Training</h1>
+          <p class="subtitle">Driving Smarter GTM with AI through a focused walkthrough of Marketing OS and Account OS workflows.</p>
+          <div class="grid">
+            <div class="stat">
+              <div class="label">Trainer Focus</div>
+              <div class="value">High-level guidance with clear execution outcomes</div>
+            </div>
+            <div class="stat">
+              <div class="label">Modules</div>
+              <div class="value">Marketing OS and Account OS</div>
+            </div>
+            <div class="stat">
+              <div class="label">Outcome</div>
+              <div class="value">Run end-to-end GTM workflows on Sprouts</div>
+            </div>
+            <div class="stat">
+              <div class="label">Session Timing</div>
+              <div class="value">Overall duration: 3-3.5 hrs</div>
+            </div>
+          </div>
+        </div>
+        <div class="visual-panel">
+          <div class="hero-orb">
+            <div class="hero-copy">
+              <strong>Training Objective</strong>
+              <span>Enable the team to configure, target, enrich, automate, and activate GTM workflows with confidence.</span>
+              <div class="flow-stack">
+                <div class="flow-section">
+                  <strong>Session Flow</strong>
+                </div>
+                <div class="flow-section">
+                  <strong>Marketing OS</strong>
+                  <div class="flow-items">
+                    <span class="flow-chip">Settings</span>
+                    <span class="flow-chip">Search</span>
+                    <span class="flow-chip">Target Profiles</span>
+                    <span class="flow-chip">Website Visits</span>
+                    <span class="flow-chip">AI Workflows</span>
+                  </div>
+                </div>
+                <div class="flow-section">
+                  <strong>Account OS</strong>
+                  <div class="flow-items">
+                    <span class="flow-chip alt">All Accounts</span>
+                    <span class="flow-chip alt">Segments</span>
+                    <span class="flow-chip alt">Discover</span>
+                    <span class="flow-chip alt">Settings</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="footer">
+        <div class="progress">
+          <span class="meta">Slide <strong>1 / 10</strong></span>
+          <div class="progress-track"><div class="progress-fill"></div></div>
+        </div>
+        <div class="controls">
+          <button class="btn-secondary prev" disabled>Previous</button>
+          <button class="btn-primary next">Next</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide" data-slide="2">
+      <div class="topbar">
+        <div class="brand">
+          <img src="https://sprouts.ai/_next/static/media/logo-icon.51debca5.png" alt="Sprouts.ai logo">
+          <span>Sprouts.ai Training</span>
+        </div>
+        <div class="pill-row">
+          <div class="pill"><strong>Module Summary</strong> Marketing OS</div>
+        </div>
+      </div>
+      <div class="content">
+        <div class="main-card">
+          <div class="eyebrow">Marketing OS Overview</div>
+          <h2>Marketing OS Summary</h2>
+          <p class="subtitle">This module covers the setup, search, target intelligence, enrichment, website visitor tracking, and workflow automation needed to move from broad market data to campaign-ready execution.</p>
+          <div class="summary-grid">
+            <div class="agenda-block">
+              <strong>Settings</strong>
+              <p class="small">Users, Bombora intent topics, ICPs, exclusions, AI messaging configuration</p>
+            </div>
+            <div class="agenda-block">
+              <strong>Search</strong>
+              <p class="small">Universal database filtering, account scouting, target profile activation, contact enrichment</p>
+            </div>
+            <div class="agenda-block">
+              <strong>Target Profiles</strong>
+              <p class="small">ICP fitment, intent, AI signals, advanced columns, enrichment, hyper-personalized messages</p>
+            </div>
+            <div class="agenda-block">
+              <strong>Website Visits + AI Workflows</strong>
+              <p class="small">Visitor tracking, workflow templates, automated campaign and outreach triggers</p>
+            </div>
+          </div>
+        </div>
+        <div class="visual-panel">
+          <div class="icon-row">
+            <div class="icon-card">
+              <div class="icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3l1.8 3.8L18 8.6l-3 2.9.7 4.1L12 13.8 8.3 15.6 9 11.5 6 8.6l4.2-.8L12 3z"/></svg>
+              </div>
+              <h3>What Teams Learn</h3>
+              <p>How to configure the workspace, find the right accounts, enrich contacts, and automate GTM actions.</p>
+            </div>
+            <div class="icon-card">
+              <div class="icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="7" height="7" rx="1.5"/><rect x="14" y="4" width="7" height="7" rx="1.5"/><rect x="14" y="15" width="7" height="6" rx="1.5"/><path d="M10 7.5h4"/><path d="M17.5 11v4"/></svg>
+              </div>
+              <h3>Execution Outcome</h3>
+              <p>Build the path from search and intelligence to signal-based campaigns and personalized outreach.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="footer">
+        <div class="progress">
+          <span class="meta">Slide <strong>2 / 11</strong></span>
+          <div class="progress-track"><div class="progress-fill"></div></div>
+        </div>
+        <div class="controls">
+          <button class="btn-secondary prev">Previous</button>
+          <button class="btn-primary next">Next</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide" data-slide="3">
+      <div class="topbar">
+        <div class="brand">
+          <img src="https://sprouts.ai/_next/static/media/logo-icon.51debca5.png" alt="Sprouts.ai logo">
+          <span>Sprouts.ai Training</span>
+        </div>
+        <div class="pill-row">
+          <div class="pill"><strong>Time Block</strong> 30 mins</div>
+        </div>
+      </div>
+      <div class="content">
+        <div class="main-card">
+          <div class="eyebrow">Module + Sub-modules</div>
+          <h2>Marketing OS: Settings</h2>
+          <div class="submodules">
+            <span class="tag">Invite & Manage Users</span>
+            <span class="tag">Set Up Intent Topics</span>
+            <span class="tag">Set Up ICPs</span>
+            <span class="tag">Exclusion List</span>
+            <span class="tag">AI Message Configuration</span>
+          </div>
+          <ul>
+            <li>Add or remove users in the platform and assign the required access.</li>
+            <li>Set up Bombora intent topics plus account and persona ICPs for faster scouting.</li>
+            <li>Upload exclusion lists manually or by CSV to avoid customers, competitors, or blocked accounts.</li>
+            <li>Configure company pain points, features, outcomes, documents, and system prompts for better AI personalization.</li>
+          </ul>
+        </div>
+        <div class="visual-panel">
+          <div class="icon-row">
+            <div class="icon-card">
+              <div class="icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3l1.8 3.8L18 8.6l-3 2.9.7 4.1L12 13.8 8.3 15.6 9 11.5 6 8.6l4.2-.8L12 3z"/></svg>
+              </div>
+              <h3>AI</h3>
+              <p>Company context, documents, and prompts for better message generation.</p>
+            </div>
+            <div class="icon-card">
+              <div class="icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><ellipse cx="12" cy="6" rx="6.5" ry="2.8"/><path d="M5.5 6v6c0 1.5 2.9 2.8 6.5 2.8s6.5-1.3 6.5-2.8V6"/><path d="M5.5 12v6c0 1.5 2.9 2.8 6.5 2.8s6.5-1.3 6.5-2.8v-6"/></svg>
+              </div>
+              <h3>Data</h3>
+              <p>Intent topics, ICP setup, users, and exclusion governance.</p>
+            </div>
+          </div>
+          <div class="side-card">
+            <div class="eyebrow">Trainer Note</div>
+            <p>Position this block as the setup foundation. Search quality, targeting, and message personalization all depend on what is configured here.</p>
+          </div>
+        </div>
+      </div>
+      <div class="footer">
+        <div class="progress">
+          <span class="meta">Slide <strong>3 / 11</strong></span>
+          <div class="progress-track"><div class="progress-fill"></div></div>
+        </div>
+        <div class="controls">
+          <button class="btn-secondary prev">Previous</button>
+          <button class="btn-primary next">Next</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide" data-slide="4">
+      <div class="topbar">
+        <div class="brand">
+          <img src="https://sprouts.ai/_next/static/media/logo-icon.51debca5.png" alt="Sprouts.ai logo">
+          <span>Sprouts.ai Training</span>
+        </div>
+        <div class="pill-row">
+          <div class="pill"><strong>Time Block</strong> 15 mins</div>
+        </div>
+      </div>
+      <div class="content">
+        <div class="main-card">
+          <div class="eyebrow">Module + Sub-modules</div>
+          <h2>Search</h2>
+          <div class="submodules">
+            <span class="tag">Universal DB Filters</span>
+            <span class="tag">Target Account Search</span>
+            <span class="tag">Move to Target Profile</span>
+            <span class="tag">Email & Phone Enrichment</span>
+          </div>
+          <ul>
+            <li>Search Sprouts' universal database using filters tailored to your target criteria.</li>
+            <li>Shortlist relevant accounts and move them into Target Profiles for deeper intelligence.</li>
+            <li>Use the same workflow to identify target contacts within those accounts.</li>
+            <li>Enrich selected contacts with email and phone numbers for outreach readiness.</li>
+          </ul>
+        </div>
+        <div class="visual-panel">
+          <div class="icon-card">
+            <div class="icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="11" cy="11" r="6.5"/><path d="M16 16l5 5"/><path d="M8.5 11h5"/><path d="M11 8.5v5"/></svg>
+            </div>
+            <h3>Data Activation Path</h3>
+            <p>Search → shortlist → move to target profiles → enrich contacts.</p>
+          </div>
+          <div class="side-card">
+            <div class="eyebrow">Execution Outcome</div>
+            <p>By the end of this block, the team should know how to move from broad database search to an action-ready target list with enriched contacts.</p>
+          </div>
+        </div>
+      </div>
+      <div class="footer">
+        <div class="progress">
+          <span class="meta">Slide <strong>4 / 11</strong></span>
+          <div class="progress-track"><div class="progress-fill"></div></div>
+        </div>
+        <div class="controls">
+          <button class="btn-secondary prev">Previous</button>
+          <button class="btn-primary next">Next</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide" data-slide="5">
+      <div class="topbar">
+        <div class="brand">
+          <img src="https://sprouts.ai/_next/static/media/logo-icon.51debca5.png" alt="Sprouts.ai logo">
+          <span>Sprouts.ai Training</span>
+        </div>
+        <div class="pill-row">
+          <div class="pill"><strong>Time Block</strong> 30 mins</div>
+        </div>
+      </div>
+      <div class="content">
+        <div class="main-card">
+          <div class="eyebrow">Module + Sub-modules</div>
+          <h2>Target Profiles: Accounts</h2>
+          <div class="submodules">
+            <span class="tag">ICP Fitment</span>
+            <span class="tag">Intent Score & Topics</span>
+            <span class="tag">AI Signals</span>
+            <span class="tag">Headcount Growth & Integrated Columns</span>
+          </div>
+          <ul>
+            <li>Explain how Sprouts calculates ICP fitment for target account prioritization.</li>
+            <li>Show how Bombora intent topics and scores surface high-intent accounts.</li>
+            <li>Teach how AI Signals track recent news, funding, and public information for better personalized outreach.</li>
+            <li>Add advanced columns like headcount growth or role-based employee counts to spot expansion signals.</li>
+          </ul>
+        </div>
+        <div class="visual-panel">
+          <div class="icon-row">
+            <div class="icon-card">
+              <div class="icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 18h16"/><path d="M7 15l3-4 3 2 4-6"/></svg>
+              </div>
+              <h3>AI Signals</h3>
+              <p>Track research signals like funding, news, and problem indicators.</p>
+            </div>
+            <div class="icon-card">
+              <div class="icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 19V5"/><path d="M9 19V9"/><path d="M14 19v-6"/><path d="M19 19v-9"/></svg>
+              </div>
+              <h3>Score Fit</h3>
+              <p>Compare ICP fit, intent, and growth indicators side by side.</p>
+            </div>
+          </div>
+          <div class="side-card">
+            <div class="eyebrow">Trainer Note</div>
+            <p>Keep the walkthrough focused on how teams judge account quality and timing, not just where each field sits in the UI.</p>
+          </div>
+        </div>
+      </div>
+      <div class="footer">
+        <div class="progress">
+          <span class="meta">Slide <strong>5 / 11</strong></span>
+          <div class="progress-track"><div class="progress-fill"></div></div>
+        </div>
+        <div class="controls">
+          <button class="btn-secondary prev">Previous</button>
+          <button class="btn-primary next">Next</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide" data-slide="6">
+      <div class="topbar">
+        <div class="brand">
+          <img src="https://sprouts.ai/_next/static/media/logo-icon.51debca5.png" alt="Sprouts.ai logo">
+          <span>Sprouts.ai Training</span>
+        </div>
+        <div class="pill-row">
+          <div class="pill"><strong>Time Block</strong> 30 mins</div>
+        </div>
+      </div>
+      <div class="content">
+        <div class="main-card">
+          <div class="eyebrow">Module + Sub-modules</div>
+          <h2>Target Profiles: Contacts</h2>
+          <div class="submodules">
+            <span class="tag">Waterfall Enrichment for Email & Phone</span>
+            <span class="tag">Hyper-Personalized Message Generation</span>
+          </div>
+          <ul>
+            <li>Show the data partners behind waterfall enrichment for email and phone numbers.</li>
+            <li>Use enrichment workflows to improve coverage on target prospects and decision-makers.</li>
+            <li>Generate hyper-personalized messages for both email and LinkedIn outreach.</li>
+            <li>Turn account context and contact data into ready-to-use outbound messaging.</li>
+          </ul>
+        </div>
+        <div class="visual-panel">
+          <div class="icon-row">
+            <div class="icon-card">
+              <div class="icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M7 8h10"/><path d="M7 12h10"/><path d="M7 16h6"/><rect x="3.5" y="4" width="17" height="16" rx="2.5"/></svg>
+              </div>
+              <h3>Work-ready Contacts</h3>
+              <p>Use multiple data sources to improve contact coverage and deliverability.</p>
+            </div>
+            <div class="icon-card">
+              <div class="icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 7h16v10H4z"/><path d="M4 8l8 6 8-6"/></svg>
+              </div>
+              <h3>Personalized Outreach</h3>
+              <p>Generate outreach aligned to persona, account context, and channel.</p>
+            </div>
+          </div>
+          <div class="side-card">
+            <div class="eyebrow">Execution Outcome</div>
+            <p>The team should be able to enrich prospects with provider-backed data and generate personalized messaging in the same workflow.</p>
+          </div>
+        </div>
+      </div>
+      <div class="footer">
+        <div class="progress">
+          <span class="meta">Slide <strong>6 / 11</strong></span>
+          <div class="progress-track"><div class="progress-fill"></div></div>
+        </div>
+        <div class="controls">
+          <button class="btn-secondary prev">Previous</button>
+          <button class="btn-primary next">Next</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide" data-slide="7">
+      <div class="topbar">
+        <div class="brand">
+          <img src="https://sprouts.ai/_next/static/media/logo-icon.51debca5.png" alt="Sprouts.ai logo">
+          <span>Sprouts.ai Training</span>
+        </div>
+        <div class="pill-row">
+          <div class="pill"><strong>Time Block</strong> 15 mins</div>
+        </div>
+      </div>
+      <div class="content">
+        <div class="main-card">
+          <div class="eyebrow">Module + Sub-modules</div>
+          <h2>Website Visitors + Workflows</h2>
+          <div class="submodules">
+            <span class="tag">Marketing OS → Website Visits</span>
+            <span class="tag">Marketing OS → AI Workflows</span>
+            <span class="tag">See Website Visitors</span>
+            <span class="tag">Workflows & Templates</span>
+          </div>
+          <ul>
+            <li>Show where website visitors are tracked and displayed inside Sprouts.</li>
+            <li>Turn ICP company visits into signals for campaign and pipeline creation.</li>
+            <li>Build workflows that automatically send visitor accounts into campaigns.</li>
+            <li>Use templates to automate repeatable processes tied to visitor or signal triggers.</li>
+          </ul>
+        </div>
+        <div class="visual-panel">
+          <div class="icon-row">
+            <div class="icon-card">
+              <div class="icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 5c4.5 0 8.3 2.7 10 7-1.7 4.3-5.5 7-10 7s-8.3-2.7-10-7c1.7-4.3 5.5-7 10-7z"/><circle cx="12" cy="12" r="2.6"/></svg>
+              </div>
+              <h3>Visitor Intent</h3>
+              <p>Track visitor activity from target companies in one place.</p>
+            </div>
+            <div class="icon-card">
+              <div class="icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="7" height="7" rx="1.5"/><rect x="14" y="4" width="7" height="7" rx="1.5"/><rect x="14" y="15" width="7" height="6" rx="1.5"/><path d="M10 7.5h4"/><path d="M17.5 11v4"/></svg>
+              </div>
+              <h3>Automation</h3>
+              <p>Automate campaign entry and outreach from visitor or signal events.</p>
+            </div>
+          </div>
+          <div class="side-card">
+            <div class="eyebrow">Trainer Note</div>
+            <p>Show one clear automation example, such as website visitor to campaign, so the team sees how workflow logic translates into action.</p>
+          </div>
+        </div>
+      </div>
+      <div class="footer">
+        <div class="progress">
+          <span class="meta">Slide <strong>7 / 11</strong></span>
+          <div class="progress-track"><div class="progress-fill"></div></div>
+        </div>
+        <div class="controls">
+          <button class="btn-secondary prev">Previous</button>
+          <button class="btn-primary next">Next</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide" data-slide="8">
+      <div class="topbar">
+        <div class="brand">
+          <img src="https://sprouts.ai/_next/static/media/logo-icon.51debca5.png" alt="Sprouts.ai logo">
+          <span>Sprouts.ai Training</span>
+        </div>
+        <div class="pill-row">
+          <div class="pill"><strong>Module Summary</strong> Account OS</div>
+        </div>
+      </div>
+      <div class="content">
+        <div class="main-card">
+          <div class="eyebrow">Account OS Overview</div>
+          <h2>Account OS Summary</h2>
+          <p class="subtitle">This module focuses on monitoring strategic accounts, tracking AI signals, organizing account segments, discovering new companies, and configuring the operating inputs that support deeper account intelligence.</p>
+          <div class="summary-grid">
+            <div class="agenda-block">
+              <strong>All Accounts</strong>
+              <p class="small">Account monitoring, AI Signals, account add/delete, overview and committee tracking</p>
+            </div>
+            <div class="agenda-block">
+              <strong>Segments</strong>
+              <p class="small">Curated account grouping for organization, management, and targeting</p>
+            </div>
+            <div class="agenda-block">
+              <strong>Discover</strong>
+              <p class="small">Prompt-based search and intelligent filtering to find net-new target accounts</p>
+            </div>
+            <div class="agenda-block">
+              <strong>Settings</strong>
+              <p class="small">Products, competitors, users, ICPs, connectors, default signals, documents</p>
+            </div>
+          </div>
+        </div>
+        <div class="visual-panel">
+          <div class="icon-row">
+            <div class="icon-card">
+              <div class="icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3l2.4 4.9L20 10l-4 3.9.9 5.5L12 16.8 7.1 19.4 8 13.9 4 10l5.6-2.1L12 3z"/></svg>
+              </div>
+              <h3>What Teams Learn</h3>
+              <p>How to monitor accounts, structure segments, discover new targets, and maintain system-level account intelligence setup.</p>
+            </div>
+            <div class="icon-card">
+              <div class="icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 18h16"/><path d="M6 18V8"/><path d="M12 18V5"/><path d="M18 18v-7"/></svg>
+              </div>
+              <h3>Execution Outcome</h3>
+              <p>Keep target accounts visible, organized, research-ready, and continuously updated with new intelligence.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="footer">
+        <div class="progress">
+          <span class="meta">Slide <strong>8 / 11</strong></span>
+          <div class="progress-track"><div class="progress-fill"></div></div>
+        </div>
+        <div class="controls">
+          <button class="btn-secondary prev">Previous</button>
+          <button class="btn-primary next">Next</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide" data-slide="9">
+      <div class="topbar">
+        <div class="brand">
+          <img src="https://sprouts.ai/_next/static/media/logo-icon.51debca5.png" alt="Sprouts.ai logo">
+          <span>Sprouts.ai Training</span>
+        </div>
+        <div class="pill-row">
+          <div class="pill"><strong>Time Block</strong> 30 mins</div>
+        </div>
+      </div>
+      <div class="content">
+        <div class="main-card">
+          <div class="eyebrow">Module + Sub-modules</div>
+          <h2>All Accounts & Discover</h2>
+          <div class="submodules">
+            <span class="tag">Create Signals</span>
+            <span class="tag">Add/Delete Accounts</span>
+            <span class="tag">Search Accounts</span>
+            <span class="tag">Prompt-Based Discovery</span>
+          </div>
+          <ul>
+            <li>Create AI Signals to track relevant changes across your target companies.</li>
+            <li>Add or delete accounts used for in-depth company overview, product heatmaps, decision-making committee tracking, relationship network tracking, and AI signals.</li>
+            <li>Discover target accounts using prompts and intelligent filters tailored to your criteria.</li>
+            <li>Use Account OS to keep account monitoring and discovery active beyond campaign setup.</li>
+          </ul>
+        </div>
+        <div class="visual-panel">
+          <div class="icon-row">
+            <div class="icon-card">
+              <div class="icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3l2.4 4.9L20 10l-4 3.9.9 5.5L12 16.8 7.1 19.4 8 13.9 4 10l5.6-2.1L12 3z"/></svg>
+              </div>
+              <h3>Signals</h3>
+              <p>Track changes and research triggers across strategic accounts.</p>
+            </div>
+            <div class="icon-card">
+              <div class="icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 18h16"/><path d="M6 18V8"/><path d="M12 18V5"/><path d="M18 18v-7"/></svg>
+              </div>
+              <h3>Discovery</h3>
+              <p>Use prompts and filters to find new accounts that match your criteria.</p>
+            </div>
+          </div>
+          <div class="side-card">
+            <div class="eyebrow">Execution Outcome</div>
+            <p>The team should understand how Account OS combines active account tracking with intelligent account discovery in one workflow.</p>
+          </div>
+        </div>
+      </div>
+      <div class="footer">
+        <div class="progress">
+          <span class="meta">Slide <strong>9 / 11</strong></span>
+          <div class="progress-track"><div class="progress-fill"></div></div>
+        </div>
+        <div class="controls">
+          <button class="btn-secondary prev">Previous</button>
+          <button class="btn-primary next">Next</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide" data-slide="10">
+      <div class="topbar">
+        <div class="brand">
+          <img src="https://sprouts.ai/_next/static/media/logo-icon.51debca5.png" alt="Sprouts.ai logo">
+          <span>Sprouts.ai Training</span>
+        </div>
+        <div class="pill-row">
+          <div class="pill"><strong>Time Block</strong> 30 mins</div>
+        </div>
+      </div>
+      <div class="content">
+        <div class="main-card">
+          <div class="eyebrow">Module + Sub-modules</div>
+          <h2>Segments & Settings</h2>
+          <div class="submodules">
+            <span class="tag">Create/Delete Segment</span>
+            <span class="tag">Products</span>
+            <span class="tag">Competitors</span>
+            <span class="tag">Manage Users</span>
+            <span class="tag">ICPs</span>
+            <span class="tag">Connectors</span>
+            <span class="tag">Signals</span>
+            <span class="tag">Documents</span>
+          </div>
+          <ul>
+            <li>Create or delete segments to organize and target curated account lists.</li>
+            <li>Configure products, competitors, ICPs, connectors, and default AI Signals.</li>
+            <li>Manage user access plus upload, download, and maintain documents for future reference.</li>
+            <li>Keep Account OS structured for segmentation, internal setup, and deeper company insight workflows.</li>
+          </ul>
+        </div>
+        <div class="visual-panel">
+          <div class="icon-row">
+            <div class="icon-card">
+              <div class="icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 6h16"/><path d="M4 12h10"/><path d="M4 18h7"/></svg>
+              </div>
+              <h3>Organization</h3>
+              <p>Organize accounts into reusable segments aligned to GTM priorities.</p>
+            </div>
+            <div class="icon-card">
+              <div class="icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v18"/><path d="M3 12h18"/><circle cx="12" cy="12" r="9"/></svg>
+              </div>
+              <h3>Workflows</h3>
+              <p>Set up products, competitors, integrations, and defaults that support daily workflows.</p>
+            </div>
+          </div>
+          <div class="side-card">
+            <div class="eyebrow">Trainer Note</div>
+            <p>Frame this section as operating-system setup for Account OS: clean segments, strong admin controls, and reliable integrations.</p>
+          </div>
+        </div>
+      </div>
+      <div class="footer">
+        <div class="progress">
+          <span class="meta">Slide <strong>10 / 11</strong></span>
+          <div class="progress-track"><div class="progress-fill"></div></div>
+        </div>
+        <div class="controls">
+          <button class="btn-secondary prev">Previous</button>
+          <button class="btn-primary next">Next</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide closing-slide" data-slide="11">
+      <div class="topbar">
+        <div class="brand">
+          <img src="https://sprouts.ai/_next/static/media/logo-icon.51debca5.png" alt="Sprouts.ai logo">
+          <span>Sprouts.ai Training</span>
+        </div>
+        <div class="pill-row">
+        </div>
+      </div>
+      <div class="content">
+        <div class="main-card">
+          <img class="closing-logo" src="https://sprouts.ai/_next/static/media/logo-icon.51debca5.png" alt="Sprouts.ai logo">
+          <h2>Thank You</h2>
+          <p class="subtitle">Thank you for joining the Sprouts.ai platform training. We covered Marketing OS and Account OS workflows to help the Atqor team move from setup to smarter GTM execution.</p>
+          <div class="closing-meta">Overall Session Timing: 3-3.5 hrs</div>
+          <p class="subtitle">Any questions?</p>
+        </div>
+      </div>
+      <div class="footer">
+        <div class="progress">
+          <span class="meta">Slide <strong>11 / 11</strong></span>
+          <div class="progress-track"><div class="progress-fill"></div></div>
+        </div>
+        <div class="controls">
+          <button class="btn-secondary prev">Previous</button>
+          <button class="btn-primary next" disabled>Next</button>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    const slides = Array.from(document.querySelectorAll(".slide"));
+    let current = 0;
+
+    function renderSlide(index) {
+      current = index;
+      slides.forEach((slide, i) => {
+        slide.classList.toggle("active", i === index);
+        const meta = slide.querySelector(".meta");
+        if (meta) {
+          meta.innerHTML = `Slide <strong>${i + 1} / ${slides.length}</strong>`;
+        }
+        const fill = slide.querySelector(".progress-fill");
+        if (fill) {
+          fill.style.width = `${((i + 1) / slides.length) * 100}%`;
+        }
+        const prev = slide.querySelector(".prev");
+        const next = slide.querySelector(".next");
+        if (prev) prev.disabled = i === 0;
+        if (next) next.disabled = i === slides.length - 1;
+      });
+    }
+
+    document.addEventListener("click", (event) => {
+      const nextButton = event.target.closest(".next");
+      const prevButton = event.target.closest(".prev");
+      if (nextButton && current < slides.length - 1) {
+        renderSlide(current + 1);
+      }
+      if (prevButton && current > 0) {
+        renderSlide(current - 1);
+      }
+    });
+
+    document.addEventListener("keydown", (event) => {
+      if (event.key === "ArrowRight" || event.key === "PageDown") {
+        if (current < slides.length - 1) renderSlide(current + 1);
+      }
+      if (event.key === "ArrowLeft" || event.key === "PageUp") {
+        if (current > 0) renderSlide(current - 1);
+      }
+    });
+
+    renderSlide(0);
+  </script>
+</body>
+</html>
