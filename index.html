@@ -136,8 +136,13 @@
     }
 
     .title-slide .content {
-      grid-template-columns: 1.2fr 0.8fr;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
       align-items: stretch;
+    }
+
+    .title-slide .content > * {
+      height: 100%;
+      min-height: 0;
     }
 
     .main-card,
@@ -147,6 +152,13 @@
       border-radius: 28px;
       padding: 24px;
       min-height: 0;
+    }
+
+    .title-slide .main-card {
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
     }
 
     .eyebrow {
@@ -167,7 +179,7 @@
 
     h1 {
       font-size: clamp(2.8rem, 5vw, 4.9rem);
-      max-width: 10ch;
+      max-width: 14ch;
     }
 
     h2 {
@@ -255,6 +267,7 @@
 
     .title-slide .visual-panel {
       height: 100%;
+      display: block;
     }
 
     .closing-slide .content {
@@ -408,6 +421,7 @@
     }
 
     .hero-orb {
+      height: 100%;
       min-height: 100%;
       border-radius: 30px;
       background:
@@ -418,7 +432,6 @@
       position: relative;
       overflow: hidden;
       display: flex;
-      align-items: center;
       padding: 20px;
     }
 
@@ -436,15 +449,37 @@
       background: rgba(255, 255, 255, 0.84);
       border: 1px solid rgba(255, 255, 255, 0.9);
       border-radius: 24px;
-      padding: 16px;
-      max-width: 420px;
+      padding: 24px;
+      max-width: none;
       width: 100%;
+      min-height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
     }
 
     .summary-grid {
       display: grid;
       grid-template-columns: repeat(2, minmax(0, 1fr));
       gap: 14px;
+    }
+
+    .summary-slide .visual-panel {
+      height: 100%;
+      align-content: stretch;
+    }
+
+    .summary-slide .icon-row {
+      grid-template-columns: 1fr;
+      height: 100%;
+      align-content: stretch;
+    }
+
+    .summary-slide .icon-card {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      min-height: 0;
     }
 
     .hero-copy strong {
@@ -528,6 +563,32 @@
       color: var(--muted);
     }
 
+    .coming-soon {
+      display: inline-flex;
+      align-items: center;
+      margin-top: 10px;
+      padding: 7px 10px;
+      border-radius: 999px;
+      background: rgba(245, 158, 11, 0.12);
+      color: #b45309;
+      font-size: 0.82rem;
+      font-weight: 700;
+      letter-spacing: 0.01em;
+    }
+
+    .feature-callout {
+      display: inline-flex;
+      align-items: center;
+      margin-top: 16px;
+      padding: 9px 12px;
+      border-radius: 14px;
+      background: linear-gradient(135deg, rgba(37, 99, 235, 0.12), rgba(15, 118, 110, 0.12));
+      border: 1px solid rgba(37, 99, 235, 0.12);
+      color: var(--text);
+      font-size: 0.86rem;
+      font-weight: 700;
+    }
+
     @media (max-width: 1024px) {
       body {
         height: auto;
@@ -592,8 +653,8 @@
       <div class="content">
         <div class="main-card">
           <div class="eyebrow">Onboarding</div>
-          <h1>Sprouts.ai Platform Training</h1>
-          <p class="subtitle">Driving Smarter GTM with AI through a focused walkthrough of Marketing OS and Account OS workflows.</p>
+          <h1>Sprouts Platform Training</h1>
+          <p class="subtitle">Drive Smarter GTM with AI through a focused walkthrough of Marketing OS and Account OS workflows.</p>
           <div class="grid">
             <div class="stat">
               <div class="label">Trainer Focus</div>
@@ -658,7 +719,7 @@
       </div>
     </section>
 
-    <section class="slide" data-slide="2">
+    <section class="slide summary-slide" data-slide="2">
       <div class="topbar">
         <div class="brand">
           <img src="https://sprouts.ai/_next/static/media/logo-icon.51debca5.png" alt="Sprouts.ai logo">
@@ -671,24 +732,25 @@
       <div class="content">
         <div class="main-card">
           <div class="eyebrow">Marketing OS Overview</div>
-          <h2>Marketing OS Summary</h2>
-          <p class="subtitle">This module covers the setup, search, target intelligence, enrichment, website visitor tracking, and workflow automation needed to move from broad market data to campaign-ready execution.</p>
+          <h2>Marketing OS</h2>
+          <p class="subtitle">This module covers the setup, search, target intelligence, enrichment, website visitor intelligence, and workflow automation needed to move from broad market data to campaign-ready execution.</p>
           <div class="summary-grid">
             <div class="agenda-block">
               <strong>Settings</strong>
               <p class="small">Users, Bombora intent topics, ICPs, exclusions, AI messaging configuration</p>
             </div>
             <div class="agenda-block">
-              <strong>Search</strong>
+              <strong>Discover</strong>
               <p class="small">Universal database filtering, account scouting, target profile activation, contact enrichment</p>
+              <div class="coming-soon">Search with AI (Coming soon)</div>
             </div>
             <div class="agenda-block">
               <strong>Target Profiles</strong>
-              <p class="small">ICP fitment, intent, AI signals, advanced columns, enrichment, hyper-personalized messages</p>
+              <p class="small">ICP fitment, intent, buying signals, advanced columns, enrichment, hyper-personalized messages</p>
             </div>
             <div class="agenda-block">
               <strong>Website Visits + AI Workflows</strong>
-              <p class="small">Visitor tracking, workflow templates, automated campaign and outreach triggers</p>
+              <p class="small">Account level intelligence, workflow templates, automated campaign and outreach triggers</p>
             </div>
           </div>
         </div>
@@ -698,7 +760,7 @@
               <div class="icon">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3l1.8 3.8L18 8.6l-3 2.9.7 4.1L12 13.8 8.3 15.6 9 11.5 6 8.6l4.2-.8L12 3z"/></svg>
               </div>
-              <h3>What Teams Learn</h3>
+              <h3>Takeaways for the team</h3>
               <p>How to configure the workspace, find the right accounts, enrich contacts, and automate GTM actions.</p>
             </div>
             <div class="icon-card">
@@ -736,7 +798,7 @@
       <div class="content">
         <div class="main-card">
           <div class="eyebrow">Module + Sub-modules</div>
-          <h2>Marketing OS: Settings</h2>
+          <h2>Settings</h2>
           <div class="submodules">
             <span class="tag">Invite & Manage Users</span>
             <span class="tag">Set Up Intent Topics</span>
@@ -747,8 +809,8 @@
           <ul>
             <li>Add or remove users in the platform and assign the required access.</li>
             <li>Set up Bombora intent topics plus account and persona ICPs for faster scouting.</li>
-            <li>Upload exclusion lists manually or by CSV to avoid customers, competitors, or blocked accounts.</li>
-            <li>Configure company pain points, features, outcomes, documents, and system prompts for better AI personalization.</li>
+            <li>Upload exclusion lists manually or via CSV to avoid customers, competitors, or blocked accounts.</li>
+            <li>Configure customer pain points, Atqor's features, outcomes, documents, and system prompts for better AI personalization.</li>
           </ul>
         </div>
         <div class="visual-panel">
@@ -799,7 +861,7 @@
       <div class="content">
         <div class="main-card">
           <div class="eyebrow">Module + Sub-modules</div>
-          <h2>Search</h2>
+          <h2>Discover</h2>
           <div class="submodules">
             <span class="tag">Universal DB Filters</span>
             <span class="tag">Target Account Search</span>
@@ -812,6 +874,7 @@
             <li>Use the same workflow to identify target contacts within those accounts.</li>
             <li>Enrich selected contacts with email and phone numbers for outreach readiness.</li>
           </ul>
+          <div class="feature-callout">Search with AI (Coming soon)</div>
         </div>
         <div class="visual-panel">
           <div class="icon-card">
@@ -856,13 +919,13 @@
           <div class="submodules">
             <span class="tag">ICP Fitment</span>
             <span class="tag">Intent Score & Topics</span>
-            <span class="tag">AI Signals</span>
+            <span class="tag">Buying Signals</span>
             <span class="tag">Headcount Growth & Integrated Columns</span>
           </div>
           <ul>
             <li>Explain how Sprouts calculates ICP fitment for target account prioritization.</li>
             <li>Show how Bombora intent topics and scores surface high-intent accounts.</li>
-            <li>Teach how AI Signals track recent news, funding, and public information for better personalized outreach.</li>
+            <li>Teach how to configurebuying Signals to track recent news, funding, and public information for better personalized outreach.</li>
             <li>Add advanced columns like headcount growth or role-based employee counts to spot expansion signals.</li>
           </ul>
         </div>
@@ -872,7 +935,7 @@
               <div class="icon">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 18h16"/><path d="M7 15l3-4 3 2 4-6"/></svg>
               </div>
-              <h3>AI Signals</h3>
+              <h3>Buying Signals</h3>
               <p>Track research signals like funding, news, and problem indicators.</p>
             </div>
             <div class="icon-card">
@@ -922,7 +985,7 @@
           <ul>
             <li>Show the data partners behind waterfall enrichment for email and phone numbers.</li>
             <li>Use enrichment workflows to improve coverage on target prospects and decision-makers.</li>
-            <li>Generate hyper-personalized messages for both email and LinkedIn outreach.</li>
+            <li>Generate AI driven personalized messages for email, LinkedIn and calls.</li>
             <li>Turn account context and contact data into ready-to-use outbound messaging.</li>
           </ul>
         </div>
@@ -1023,7 +1086,7 @@
       </div>
     </section>
 
-    <section class="slide" data-slide="8">
+    <section class="slide summary-slide" data-slide="8">
       <div class="topbar">
         <div class="brand">
           <img src="https://sprouts.ai/_next/static/media/logo-icon.51debca5.png" alt="Sprouts.ai logo">
@@ -1036,12 +1099,12 @@
       <div class="content">
         <div class="main-card">
           <div class="eyebrow">Account OS Overview</div>
-          <h2>Account OS Summary</h2>
-          <p class="subtitle">This module focuses on monitoring strategic accounts, tracking AI signals, organizing account segments, discovering new companies, and configuring the operating inputs that support deeper account intelligence.</p>
+          <h2>Account OS</h2>
+          <p class="subtitle">The module focuses on monitoring strategic accounts, tracking buying signals, organizing account segments, discovering new companies, and configuring the operating inputs that support deeper account intelligence.</p>
           <div class="summary-grid">
             <div class="agenda-block">
               <strong>All Accounts</strong>
-              <p class="small">Account monitoring, AI Signals, account add/delete, overview and committee tracking</p>
+              <p class="small">Account monitoring, buying Signals, account add/delete, overview and committee tracking</p>
             </div>
             <div class="agenda-block">
               <strong>Segments</strong>
@@ -1063,7 +1126,7 @@
               <div class="icon">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3l2.4 4.9L20 10l-4 3.9.9 5.5L12 16.8 7.1 19.4 8 13.9 4 10l5.6-2.1L12 3z"/></svg>
               </div>
-              <h3>What Teams Learn</h3>
+              <h3>Takeaways for the team</h3>
               <p>How to monitor accounts, structure segments, discover new targets, and maintain system-level account intelligence setup.</p>
             </div>
             <div class="icon-card">
@@ -1109,8 +1172,8 @@
             <span class="tag">Prompt-Based Discovery</span>
           </div>
           <ul>
-            <li>Create AI Signals to track relevant changes across your target companies.</li>
-            <li>Add or delete accounts used for in-depth company overview, product heatmaps, decision-making committee tracking, relationship network tracking, and AI signals.</li>
+            <li>Create buying Signals to track relevant changes across your target companies.</li>
+            <li>Add or delete accounts used for in-depth company overview, product heatmaps, decision-making committee tracking, relationship network tracking, and buying signals.</li>
             <li>Discover target accounts using prompts and intelligent filters tailored to your criteria.</li>
             <li>Use Account OS to keep account monitoring and discovery active beyond campaign setup.</li>
           </ul>
@@ -1176,7 +1239,7 @@
           </div>
           <ul>
             <li>Create or delete segments to organize and target curated account lists.</li>
-            <li>Configure products, competitors, ICPs, connectors, and default AI Signals.</li>
+            <li>Configure products, competitors, ICPs, connectors, and default buying Signals.</li>
             <li>Manage user access plus upload, download, and maintain documents for future reference.</li>
             <li>Keep Account OS structured for segmentation, internal setup, and deeper company insight workflows.</li>
           </ul>
